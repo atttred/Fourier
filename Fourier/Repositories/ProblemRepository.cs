@@ -2,11 +2,11 @@
 using Fourier.Data;
 using Fourier.Models;
 
-public interface ITaskRepository : IRepository<Problem>
+public interface IProblemRepository : IRepository<Problem>
 {
 }
 
-public class ProblemRepository : Repository<Problem>, ITaskRepository
+public class ProblemRepository : Repository<Problem>, IProblemRepository
 {
     public ProblemRepository(FourierDbContext dbContext) : base(dbContext)
     {

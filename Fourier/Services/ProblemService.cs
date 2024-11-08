@@ -16,9 +16,9 @@ public interface IProblemService
 
 public class ProblemService : IProblemService
 {
-    private readonly ITaskRepository _taskRepository;
+    private readonly IProblemRepository _taskRepository;
 
-    public ProblemService(ITaskRepository taskRepository)
+    public ProblemService(IProblemRepository taskRepository)
     {
         _taskRepository = taskRepository;
     }
