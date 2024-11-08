@@ -10,5 +10,5 @@ public class User
 
     public DateTime CreatedAt { get; set; }
 
-    public ICollection<Task> Tasks { get; set; } = new List<Task>();
+    public ICollection<Problem> Tasks { get; set; } = new List<Problem>();
 }

@@ -6,5 +6,5 @@ public class CancellationToken
     public Guid TaskId { get; set; }
     public bool IsCancelled { get; set; }
 
-    public Task Task { get; set; } = null!;
+    public Problem Task { get; set; } = null!;
 }

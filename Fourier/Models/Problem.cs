@@ -1,6 +1,6 @@
 ﻿namespace Fourier.Models;
 
-public class Task
+public class Problem
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
