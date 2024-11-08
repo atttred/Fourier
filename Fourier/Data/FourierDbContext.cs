@@ -13,7 +13,7 @@ public class FourierDbContext : DbContext
 
     public DbSet<User> Users { get; set; }
 
-    public DbSet<Task> Tasks { get; set; }
+    public DbSet<Problem> Tasks { get; set; }
 
     public DbSet<CancellationToken> CancellationTokens { get; set; }
 
@@ -41,7 +41,7 @@ public class FourierDbContext : DbContext
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<Task>(entity =>
+        modelBuilder.Entity<Problem>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Status)
