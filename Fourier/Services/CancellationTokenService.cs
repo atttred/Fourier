@@ -4,13 +4,13 @@ using Fourier.Models;
 using System;
 using System.Threading.Tasks;
 
-public interface ICancellationTokerService
+public interface ICancellationTokenService
 {
     Task<CancellationToken> CreateCancellationTokenAsync(Guid problemId);
     Task CancelProblemAsync(Guid problemId);
 }
 
-public class CancellationTokenService : ICancellationTokerService
+public class CancellationTokenService : ICancellationTokenService
 {
     private readonly ICancellationTokenRepository _cancellationTokenRepository;
     private readonly IProblemService _problemService;
