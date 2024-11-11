@@ -4,13 +4,13 @@ using Fourier.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR;
+using Fourier.DTOs;
 
 public interface IProblemService
 {
     Task<IEnumerable<Problem>> GetAllTasksAsync();
     Task<Problem> GetTaskByIdAsync(Guid id);
-    Task<Problem> CreateTaskAsync(Problem task);
+    Task<Problem> CreateTaskAsync(ProblemDto task, Guid userId);
     Task UpdateTaskAsync(Problem task);
     Task DeleteTaskAsync(Guid id);
     Task UpdateProgress(Guid id, int progress);
@@ -19,12 +19,12 @@ public interface IProblemService
 public class ProblemService : IProblemService
 {
     private readonly IProblemRepository _taskRepository;
-    private readonly IHubContext<ProgressHub> _hubContext;
+    private readonly IUserRepository _userRepository;
 
-    public ProblemService(IProblemRepository taskRepository, IHubContext<ProgressHub> hubContext)
+    public ProblemService(IProblemRepository taskRepository, IUserRepository userRepository)
     {
         _taskRepository = taskRepository;
-        _hubContext = hubContext;
+        _userRepository = userRepository;
     }
 
     public async Task<IEnumerable<Problem>> GetAllTasksAsync()
@@ -37,12 +37,23 @@ public class ProblemService : IProblemService
         return await _taskRepository.GetByIdAsync(id);
     }
 
-    public async Task<Problem> CreateTaskAsync(Problem task)
+    public async Task<Problem> CreateTaskAsync(ProblemDto task, Guid userId)
     {
-        task.Id = Guid.NewGuid();
-        task.Status = "Pending";
-        task.Progress = 0;
-        return await _taskRepository.AddAsync(task);
+        var problem = new Problem
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            Status = "Pending",
+            Input = task.Input,
+            StartedAt = null,
+            FinishedAt = null,
+            Progress = 0,
+            Result = string.Empty,
+            IsCancelled = false,
+            User = _userRepository.GetByIdAsync(userId).Result
+        };
+
+        return await _taskRepository.AddAsync(problem);
     }
 
     public async Task UpdateTaskAsync(Problem task)
@@ -60,6 +71,5 @@ public class ProblemService : IProblemService
         var task = await _taskRepository.GetByIdAsync(id);
         task.Progress = progress;
         await _taskRepository.UpdateAsync(task);
-        await _hubContext.Clients.Group(id.ToString()).SendAsync("UpdateProgress", progress);
     }
 }
