@@ -12,6 +12,7 @@ public interface IUserService
     Task<User> CreateUserAsync(User user);
     Task UpdateUserAsync(User user);
     Task DeleteUserAsync(Guid id);
+    Task GetByUserNameAsync(string username);
 }
 
 public class UserService : IUserService
@@ -48,5 +49,10 @@ public class UserService : IUserService
     public async Task DeleteUserAsync(Guid id)
     {
         await _userRepository.DeleteAsync(id);
+    }
+
+    public async Task GetByUserNameAsync(string username)
+    {
+        await _userRepository.GetByUserNameAsync(username);
     }
 }

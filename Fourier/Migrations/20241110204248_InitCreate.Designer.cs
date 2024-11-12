@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fourier.Migrations
 {
     [DbContext(typeof(FourierDbContext))]
-    [Migration("20241108085129_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241110204248_InitCreate")]
+    partial class InitCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,7 +40,7 @@ namespace Fourier.Migrations
                     b.ToTable("CancellationTokens");
                 });
 
-            modelBuilder.Entity("Fourier.Models.Task", b =>
+            modelBuilder.Entity("Fourier.Models.Problem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -87,21 +87,60 @@ namespace Fourier.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("HashedPassword")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Username")
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Username")
+                    b.HasIndex("UserName")
                         .IsUnique();
 
                     b.ToTable("Users");
@@ -109,7 +148,7 @@ namespace Fourier.Migrations
 
             modelBuilder.Entity("Fourier.Models.CancellationToken", b =>
                 {
-                    b.HasOne("Fourier.Models.Task", "Task")
+                    b.HasOne("Fourier.Models.Problem", "Task")
                         .WithOne("CancellationToken")
                         .HasForeignKey("Fourier.Models.CancellationToken", "TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -118,7 +157,7 @@ namespace Fourier.Migrations
                     b.Navigation("Task");
                 });
 
-            modelBuilder.Entity("Fourier.Models.Task", b =>
+            modelBuilder.Entity("Fourier.Models.Problem", b =>
                 {
                     b.HasOne("Fourier.Models.User", "User")
                         .WithMany("Tasks")
@@ -129,7 +168,7 @@ namespace Fourier.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Fourier.Models.Task", b =>
+            modelBuilder.Entity("Fourier.Models.Problem", b =>
                 {
                     b.Navigation("CancellationToken");
                 });

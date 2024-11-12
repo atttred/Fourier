@@ -4,21 +4,21 @@ using Fourier.Models;
 using System;
 using System.Threading.Tasks;
 
-public interface ICancellationTokerService
+public interface ICancellationTokenService
 {
     Task<CancellationToken> CreateCancellationTokenAsync(Guid problemId);
     Task CancelProblemAsync(Guid problemId);
 }
 
-public class CancellationTokenService : ICancellationTokerService
+public class CancellationTokenService : ICancellationTokenService
 {
     private readonly ICancellationTokenRepository _cancellationTokenRepository;
-    private readonly IProblemService _problemService;
+    private readonly IProblemRepository _problemRepository;
 
-    public CancellationTokenService(ICancellationTokenRepository cancellationTokenRepository, IProblemService problemService)
+    public CancellationTokenService(ICancellationTokenRepository cancellationTokenRepository, IProblemRepository problemService)
     {
         _cancellationTokenRepository = cancellationTokenRepository;
-        _problemService = problemService;
+        _problemRepository = problemService;
     }
 
     public async Task<CancellationToken> CreateCancellationTokenAsync(Guid problemId)
@@ -29,11 +29,20 @@ public class CancellationTokenService : ICancellationTokerService
 
     public async Task CancelProblemAsync(Guid problemId)
     {
-        var problem = await _problemService.GetTaskByIdAsync(problemId);
+        var problem = await _problemRepository.GetByIdAsync(problemId);
+
+        var token = await _cancellationTokenRepository.GetAllAsync()
+            .ContinueWith(t => t.Result.FirstOrDefault(t => t.TaskId == problemId));
+
+        token!.IsCancelled = true;
+
+        await _cancellationTokenRepository.UpdateAsync(token);
+
         if (problem != null)
         {
             problem.IsCancelled = true;
-            await _problemService.UpdateTaskAsync(problem);
+            problem.Status = "Cancelled";
+            await _problemRepository.UpdateAsync(problem);
         }
     }
 }

@@ -24,7 +24,7 @@ public class FourierDbContext : DbContext
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.Username)
+            entity.Property(e => e.UserName)
                   .IsRequired()
                   .HasMaxLength(50);
             entity.Property(e => e.HashedPassword)
@@ -32,7 +32,7 @@ public class FourierDbContext : DbContext
             entity.Property(e => e.CreatedAt)
                   .IsRequired();
 
-            entity.HasIndex(e => e.Username)
+            entity.HasIndex(e => e.UserName)
                   .IsUnique();
 
             entity.HasMany(e => e.Tasks)
@@ -66,6 +66,7 @@ public class FourierDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.IsCancelled)
+                  .HasDefaultValue(false)
                   .IsRequired();
 
             entity.HasIndex(e => e.TaskId)

@@ -12,8 +12,8 @@
 
 appsettings.json
 appsettings.Development.json
-fourier.db-shm
-fourier.db-wal
+fourier_1.db-shm
+fourier_1.db-wal
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
