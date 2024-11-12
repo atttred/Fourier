@@ -12,15 +12,15 @@ public class ProblemController : ControllerBase
 {
     private readonly IProblemService problemService;
     private readonly ICancellationTokenService cancellationTokerService;
-    private readonly IServiceProvider serviceProvider;
     private readonly IUserService userService;
+    private readonly ILogicService logicService;
 
-    public ProblemController(IProblemService problemService, ICancellationTokenService cancellationTokerService, IServiceProvider serviceProvider, IUserService userService)
+    public ProblemController(IProblemService problemService, ICancellationTokenService cancellationTokerService, IUserService userService, ILogicService logicService)
     {
         this.problemService = problemService;
         this.cancellationTokerService = cancellationTokerService;
-        this.serviceProvider = serviceProvider;
         this.userService = userService;
+        this.logicService = logicService;
     }
 
     private Guid GetUserId()
@@ -35,7 +35,7 @@ public class ProblemController : ControllerBase
         if (problem == null)
         {
             return NotFound();
-        }
+        }                                                                                                         
         return Ok(problem);
     }
 
@@ -49,14 +49,11 @@ public class ProblemController : ControllerBase
 
         var userId = GetUserId();
         var createdProblem = await problemService.CreateTaskAsync(problem, userId);
+        var token = await cancellationTokerService.CreateCancellationTokenAsync(createdProblem.Id);
         createdProblem.User = await userService.GetUserByIdAsync(userId);
-        /*        // get new context
-                using(var scope = serviceProvider.CreateScope())
-                {
-                    var problemService = scope.ServiceProvider.GetRequiredService<FourierDbContext>();
+        createdProblem.CancellationToken = token;
+        _ = await logicService.CalculateAsync(createdProblem.Id, problem.Input);
 
-                }*/
-        createdProblem.CancellationToken = await cancellationTokerService.CreateCancellationTokenAsync(createdProblem.Id);
         return CreatedAtAction(nameof(GetProblem), new { id = createdProblem.Id }, createdProblem);
     }
 

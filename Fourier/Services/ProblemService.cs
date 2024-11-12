@@ -14,6 +14,8 @@ public interface IProblemService
     Task UpdateTaskAsync(Problem task);
     Task DeleteTaskAsync(Guid id);
     Task UpdateProgress(Guid id, int progress);
+    Task UpdateStatusAsync(Guid id, string status, DateTime startedAt, DateTime? endTime);
+    Task UpdateResultAsync(Guid id, string result);
 }
 
 public class ProblemService : IProblemService
@@ -70,6 +72,22 @@ public class ProblemService : IProblemService
     {
         var task = await _taskRepository.GetByIdAsync(id);
         task.Progress = progress;
+        await _taskRepository.UpdateAsync(task);
+    }
+
+    public async Task UpdateStatusAsync(Guid id, string status, DateTime startedAt, DateTime? endTime)
+    {
+        var task = await _taskRepository.GetByIdAsync(id);
+        task.Status = status;
+        task.StartedAt = startedAt;
+        task.FinishedAt = endTime;
+        await _taskRepository.UpdateAsync(task);
+    }
+
+    public async Task UpdateResultAsync(Guid id, string result)
+    {
+        var task = await _taskRepository.GetByIdAsync(id);
+        task.Result = result;
         await _taskRepository.UpdateAsync(task);
     }
 }

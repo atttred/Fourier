@@ -66,6 +66,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICancellationTokenRepository, CancellationTokenRepository>();
 builder.Services.AddScoped<IProblemRepository, ProblemRepository>();
 
+builder.Services.AddScoped<ILogicService, LogicService>();
 builder.Services.AddScoped<IProblemService, ProblemService>();
 builder.Services.AddScoped<ICancellationTokenService, CancellationTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
