@@ -55,7 +55,7 @@ public class CustomLoadPolicy : ILoadBalancingPolicy
                 lessBusyServer = destination;
             }
 
-            Console.WriteLine($"Server: {destination.Model.Config.Address} has {inputWeight} tasks");
+            Console.WriteLine($"Server: {destination.Model.Config.Address} has {inputWeight} input value");
         }
 
         return lessBusyServer;
@@ -77,7 +77,7 @@ public class CustomLoadPolicy : ILoadBalancingPolicy
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Server: {address} has {content} tasks(GetInputWeight)");
+                Console.WriteLine($"Server: {address} has {content} input value(GetInputWeight)");
 
                 return JsonSerializer.Deserialize<int>(content);
             }

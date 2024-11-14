@@ -64,7 +64,7 @@ public class ProblemController : ControllerBase
         createdProblem.User = await userService.GetUserByIdAsync(userId);
         createdProblem.CancellationToken = token;
 
-        Interlocked.Increment(ref N);
+        Interlocked.Add(ref N, problem.Input);
 
         _ = Task.Run(async () =>
         {
@@ -74,7 +74,7 @@ public class ProblemController : ControllerBase
             }
             finally
             {
-                Interlocked.Decrement(ref N);
+                Interlocked.Add(ref N, -problem.Input);
             }
         });
 
