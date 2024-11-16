@@ -155,9 +155,7 @@ The API uses a consistent error handling pattern with appropriate HTTP status co
 
 ## Testing
 
-To test the API endpoints, use the provided `.http` files in each project:
-- `Fourier.http` for main API endpoints
-- `Fourier_Balancer.http` for load balancer testing
+To test the API endpoints, use Swagger or Postman.
 
 ## Security
 
