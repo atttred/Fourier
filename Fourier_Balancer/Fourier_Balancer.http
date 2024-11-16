@@ -1,0 +1,6 @@
+@Fourier_Balancer_HostAddress = http://localhost:5260
+
+GET {{Fourier_Balancer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

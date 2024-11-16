@@ -3,9 +3,9 @@ using Fourier.Services;
 using Microsoft.AspNetCore.Authorization;
 using Fourier.DTOs;
 using System.Security.Claims;
+using Fourier.Models;
 namespace Fourier.Controllers;
 
-[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class ProblemController : ControllerBase
@@ -14,6 +14,7 @@ public class ProblemController : ControllerBase
     private readonly ICancellationTokenService cancellationTokerService;
     private readonly IUserService userService;
     private readonly ILogicService logicService;
+    private static volatile int N = 0;
 
     public ProblemController(IProblemService problemService, ICancellationTokenService cancellationTokerService, IUserService userService, ILogicService logicService)
     {
@@ -28,6 +29,16 @@ public class ProblemController : ControllerBase
         return Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetProblems()
+    {
+        var userId = GetUserId();
+        var problems = await problemService.GetAllUserTasksAsync(userId);
+        Console.WriteLine($"{problems.ToList<Problem>().Count}");
+        return Ok(problems);
+    }
+
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetProblem(Guid id)
     {
@@ -39,7 +50,17 @@ public class ProblemController : ControllerBase
         return Ok(problem);
     }
 
-    [HttpPost]
+    [HttpGet("problemInProgress")]
+    [ProducesResponseType(200)]
+    public IActionResult GetProblemInProgress()
+    {
+        var problem = N;
+
+        return Ok(problem);
+    }
+
+    [Authorize]
+    [HttpPost("create")]
     public async Task<IActionResult> CreateProblem([FromBody] ProblemDto problem)
     {
         if (!ModelState.IsValid)
@@ -52,11 +73,25 @@ public class ProblemController : ControllerBase
         var token = await cancellationTokerService.CreateCancellationTokenAsync(createdProblem.Id);
         createdProblem.User = await userService.GetUserByIdAsync(userId);
         createdProblem.CancellationToken = token;
-        _ = await logicService.CalculateAsync(createdProblem.Id, problem.Input);
+
+        Interlocked.Add(ref N, problem.Input);
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await logicService.CalculateAsync(createdProblem.Id, problem.Input);
+            }
+            finally
+            {
+                Interlocked.Add(ref N, -problem.Input);
+            }
+        });
 
         return CreatedAtAction(nameof(GetProblem), new { id = createdProblem.Id }, createdProblem);
     }
 
+    [Authorize]
     [HttpPut("{id}/cancel")]
     public async Task<IActionResult> CancelProblem(Guid id)
     {
