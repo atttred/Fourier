@@ -16,6 +16,7 @@ public interface IProblemService
     Task UpdateProgress(Guid id, int progress);
     Task UpdateStatusAsync(Guid id, string status, DateTime startedAt, DateTime? endTime);
     Task UpdateResultAsync(Guid id, string result);
+    Task<IEnumerable<Problem>> GetAllUserTasksAsync(Guid userId);
 }
 
 public class ProblemService : IProblemService
@@ -89,5 +90,10 @@ public class ProblemService : IProblemService
         var task = await _taskRepository.GetByIdAsync(id);
         task.Result = result;
         await _taskRepository.UpdateAsync(task);
+    }
+
+    public async Task<IEnumerable<Problem>> GetAllUserTasksAsync(Guid userId)
+    {
+        return await _taskRepository.GetAll(userId);
     }
 }

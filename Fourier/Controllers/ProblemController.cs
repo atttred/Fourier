@@ -3,6 +3,7 @@ using Fourier.Services;
 using Microsoft.AspNetCore.Authorization;
 using Fourier.DTOs;
 using System.Security.Claims;
+using Fourier.Models;
 namespace Fourier.Controllers;
 
 [Route("api/[controller]")]
@@ -26,6 +27,15 @@ public class ProblemController : ControllerBase
     private Guid GetUserId()
     {
         return Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetProblems()
+    {
+        var userId = GetUserId();
+        var problems = await problemService.GetAllUserTasksAsync(userId);
+        Console.WriteLine($"{problems.ToList<Problem>().Count}");
+        return Ok(problems);
     }
 
     [Authorize]
